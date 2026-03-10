@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
+import { getAllReviews, resolveAssetUrl } from '../lib/reviews'
 
 export default function About() {
   const [reviews, setReviews] = useState([])
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/reviews`).then(r => r.json()).then(setReviews).catch(() => setReviews([]))
+    getAllReviews().then(setReviews).catch(() => setReviews([]))
   }, [])
 
   return (
@@ -64,9 +63,9 @@ export default function About() {
                 {r.image && (
                   <div style={{ marginTop: 8 }}>
                     <img
-                      src={`${API_BASE}/${r.image}`} alt="review"
+                      src={resolveAssetUrl(r.image)} alt="review"
                       style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in' }}
-                      onClick={() => window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { src: `${API_BASE}/${r.image}` } }))}
+                      onClick={() => window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { src: resolveAssetUrl(r.image) } }))}
                     />
                   </div>
                 )}

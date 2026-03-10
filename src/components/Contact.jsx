@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || 'https://formsubmit.co/ajax/howardduffus@gmail.com'
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -24,10 +26,20 @@ export default function Contact() {
 
     setSubmitting(true)
     try {
-      const res = await fetch('http://localhost:4000/api/contact', {
+      const res = await fetch(CONTACT_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service: formData.service,
+          message: formData.message,
+          _subject: 'Duffus Flooring Contact Request'
+        })
       })
 
       if (res.ok) {
@@ -107,7 +119,8 @@ export default function Contact() {
           letter-spacing: 1px;
         }
 
-        .contact-info-card a {
+        .contact-info-card a,
+        .contact-info-card span {
           color: #ffd880;
           text-decoration: none;
           font-size: 1.1rem;
@@ -255,12 +268,12 @@ export default function Contact() {
         <div className="contact-info-card">
           <div className="icon">📧</div>
           <h3>Email</h3>
-          <a href="mailto:howardduffus@gmail.com">howardduffus@gmail.com</a>
+          <span>howardduffus@gmail.com</span>
         </div>
         <div className="contact-info-card">
           <div className="icon">📞</div>
           <h3>Phone</h3>
-          <a href="tel:+18763141008">(876) 314-1008</a>
+          <span>(876) 314-1008</span>
         </div>
       </div>
 

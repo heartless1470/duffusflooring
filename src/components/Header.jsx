@@ -10,6 +10,19 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    if (!isOpen) return undefined
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setIsOpen(false)
+    }
+    document.body.classList.add('menu-open')
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.classList.remove('menu-open')
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isOpen])
+
   return (
     <header className={isScrolled ? 'scrolled' : ''}>
       <div className="container nav-container">
@@ -23,26 +36,34 @@ export default function Header() {
             <li><a href="#contact">Contact</a></li>
           </ul>
           <button
-            className="hamburger"
+            className={`hamburger ${isOpen ? 'open' : ''}`}
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <i className="fas fa-bars"></i>
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
         </nav>
       </div>
 
-      {isOpen && (
-        <nav id="mobile-menu" className="mobile-menu container" role="navigation">
+      <div className={`mobile-menu-shell ${isOpen ? 'open' : ''}`}>
+        <button
+          className="mobile-menu-backdrop"
+          aria-label="Close menu"
+          onClick={() => setIsOpen(false)}
+        ></button>
+        <nav id="mobile-menu" className="mobile-menu" role="navigation">
           <a href="#home" onClick={() => setIsOpen(false)}>Home</a>
           <a href="#about" onClick={() => setIsOpen(false)}>About</a>
           <a href="#services" onClick={() => setIsOpen(false)}>Services</a>
           <a href="#portfolio" onClick={() => setIsOpen(false)}>Portfolio</a>
           <a href="#contact" onClick={() => setIsOpen(false)}>Contact</a>
+          <a href="#leave-review" onClick={() => setIsOpen(false)}>Leave a Review</a>
         </nav>
-      )}
+      </div>
     </header>
   )
 }

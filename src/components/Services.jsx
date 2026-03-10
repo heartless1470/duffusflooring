@@ -63,7 +63,7 @@ export default function Services() {
   ]
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/services')
+    fetch('/api/services')
       .then(r => r.json())
       .then(data => {
         // Parse bullets if stored as JSON string

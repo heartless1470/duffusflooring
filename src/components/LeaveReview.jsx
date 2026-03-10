@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { readFileAsDataUrl, saveLocalReview } from '../lib/reviews'
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
+const REVIEW_ENDPOINT = import.meta.env.VITE_REVIEW_ENDPOINT || 'https://formsubmit.co/ajax/howardduffus@gmail.com'
 
 export default function LeaveReview() {
   const [name, setName] = useState('')
@@ -35,18 +36,31 @@ export default function LeaveReview() {
       form.append('name', name)
       form.append('rating', String(rating))
       form.append('text', text)
-      if (image) form.append('image', image)
+      form.append('_subject', 'Duffus Flooring New Review')
+      if (image) form.append('attachment', image)
 
-      const res = await fetch(`${API_BASE}/api/reviews`, { method: 'POST', body: form })
+      const res = await fetch(REVIEW_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: form
+      })
       if (!res.ok) {
-        const err = await res.json().catch(()=>({error:'Unknown'}))
+        const err = await res.json().catch(() => ({ error: 'Unknown' }))
         throw new Error(err.error || 'Failed')
       }
+      const imageDataUrl = image ? await readFileAsDataUrl(image) : null
+      saveLocalReview({ name, rating, text, image: imageDataUrl })
       alert('Thanks — your review was submitted.')
-      // redirect to home for social proof
       window.location.hash = 'home'
     } catch (err) {
-      alert('Could not submit review — ' + (err.message || 'check the server'))
+      try {
+        const imageDataUrl = image ? await readFileAsDataUrl(image) : null
+        saveLocalReview({ name, rating, text, image: imageDataUrl })
+        alert('Your review was saved on this device and will still appear on the site.')
+        window.location.hash = 'home'
+      } catch {
+        alert('Could not submit review — ' + (err.message || 'check connection and try again'))
+      }
     } finally {
       setSubmitting(false)
     }

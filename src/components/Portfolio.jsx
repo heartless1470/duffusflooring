@@ -10,17 +10,60 @@ export default function Portfolio() {
 
   const titleCase = (s) => s ? s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : s
 
+  const inferType = (albumName) => {
+    const lower = albumName.toLowerCase()
+    if (lower.includes('vinyl')) return 'Vinyl'
+    if (lower.includes('deck')) return 'Deck'
+    if (lower.includes('stair')) return 'Hardwood'
+    if (lower.includes('hardwood')) return 'Hardwood'
+    return 'Project'
+  }
+
+  const toPublicAssetUrl = (value) => {
+    if (!value) return null
+    if (/^https?:\/\//i.test(value)) return value
+    const normalized = String(value).replace(/^\.?\//, '')
+    return `/${encodeURI(normalized)}`
+  }
+
+  const deriveProjectsFromManifest = (manifestData) => {
+    const albums = manifestData?.albums || {}
+    return Object.entries(albums).map(([albumName, files], idx) => {
+      const items = Array.isArray(files) ? files : []
+      const firstImage = items.find((item) => {
+        const lower = item.toLowerCase()
+        return !(lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg'))
+      })
+
+      return {
+        id: albumName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || `album-${idx}`,
+        title: titleCase(albumName),
+        type: inferType(albumName),
+        description: `${titleCase(albumName)} project showcase.`,
+        albumName,
+        imageCount: items.length,
+        images: items,
+        coverImage: firstImage ? toPublicAssetUrl(firstImage) : '/hero.jpg'
+      }
+    })
+  }
+
 
 
   useEffect(() => {
-    // Fetch both manifest and projects
-    Promise.all([
-      fetch('/portfolio-manifest.json').then(r => r.ok ? r.json() : { albums: {} }),
-      fetch('http://localhost:4000/api/projects').then(r => r.ok ? r.json() : [])
+    Promise.allSettled([
+      fetch('/portfolio-manifest.json').then((r) => (r.ok ? r.json() : { albums: {} })),
+      fetch('/api/projects').then((r) => (r.ok ? r.json() : []))
     ])
-      .then(([m, p]) => {
+      .then(([manifestResult, projectsResult]) => {
+        const m = manifestResult.status === 'fulfilled' ? manifestResult.value : { albums: {} }
+        const apiProjects = projectsResult.status === 'fulfilled' && Array.isArray(projectsResult.value)
+          ? projectsResult.value
+          : []
+        const staticProjects = deriveProjectsFromManifest(m)
+
         setManifest(m)
-        setProjects(p)
+        setProjects(apiProjects.length > 0 ? apiProjects : staticProjects)
         setLoading(false)
       })
       .catch(err => {
@@ -533,9 +576,13 @@ export default function Portfolio() {
             <div className="albums-container">
               {projects.map((project, i) => {
                 // Determine display image and count
-                const thumb = project.coverImage ? project.coverImage : 
-                              project.image && (project.image.startsWith('/uploads') || project.image.startsWith('/')) ? project.image :
-                              project.images && project.images.length > 0 ? project.images[0] : '/hero.jpg'
+                const thumb = project.coverImage
+                  ? toPublicAssetUrl(project.coverImage)
+                  : project.image && (project.image.startsWith('/uploads') || project.image.startsWith('/'))
+                    ? toPublicAssetUrl(project.image)
+                    : project.images && project.images.length > 0
+                      ? toPublicAssetUrl(project.images[0])
+                      : '/hero.jpg'
                 const count = project.albumName ? project.imageCount : (project.images ? project.images.length : 1)
                 
                 // Determine if this is clickable (has images/album)
@@ -595,7 +642,7 @@ export default function Portfolio() {
           <div className="gallery-grid">
             {manifest.albums[album].map((file, i) => {
               const lower = file.toLowerCase()
-              const name = file.split('/').pop().replace(/[_\-]/g, ' ')
+              const name = file.split('/').pop().replace(/[-_]/g, ' ')
               const isVideo = lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.ogg')
 
               return (
@@ -651,8 +698,8 @@ export default function Portfolio() {
 
           <div className="gallery-grid">
             {galleryProject.images.map((imageUrl, i) => {
-              const name = imageUrl.split('/').pop().replace(/[_\-]/g, ' ')
-              const fullUrl = imageUrl.startsWith('/uploads') ? `http://localhost:4000${imageUrl}` : imageUrl
+              const name = imageUrl.split('/').pop().replace(/[-_]/g, ' ')
+              const fullUrl = toPublicAssetUrl(imageUrl)
 
               return (
                 <div

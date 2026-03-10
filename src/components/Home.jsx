@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
+import { getAllReviews, resolveAssetUrl } from '../lib/reviews'
 
 export default function Home() {
   const [featured, setFeatured] = useState([])
@@ -9,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     let mounted = true
-    fetch(`${API_BASE}/api/reviews`).then(r => r.json()).then(list => {
+    getAllReviews().then(list => {
       if (!mounted) return
       const high = (list || []).filter(x => Number(x.rating) >= 4)
       setFeatured(high)
@@ -146,10 +145,10 @@ export default function Home() {
                     {r.image && (
                       <div style={{ marginTop: 12, textAlign: 'center' }}>
                         <img
-                          src={`${API_BASE}/${r.image}`}
+                          src={resolveAssetUrl(r.image)}
                           alt="review"
                           style={{ width: '100%', maxWidth: 360, height: 220, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in' }}
-                          onClick={() => window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { src: `${API_BASE}/${r.image}` } }))}
+                          onClick={() => window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { src: resolveAssetUrl(r.image) } }))}
                         />
                       </div>
                     )}
