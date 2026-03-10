@@ -26,7 +26,7 @@ export default function AdminEstimateRequests({ adminKey, onUpdate }) {
 
   const handleStatusChange = async (id, status) => {
     try {
-      const res = await adminFetch(`/api/admin/messages/${id}/status`, adminKey, {
+      const res = await adminFetch(`/api/admin/messages/${id}`, adminKey, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })

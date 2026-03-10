@@ -11,7 +11,7 @@ export default function AdminLogin({ onLogin }) {
     setLoading(true)
 
     try {
-      const res = await fetch(`/api/admin/validate?key=${encodeURIComponent(password)}`)
+      const res = await fetch(`/api/admin/messages?key=${encodeURIComponent(password)}`)
       if (res.ok) {
         onLogin(password)
       } else {
