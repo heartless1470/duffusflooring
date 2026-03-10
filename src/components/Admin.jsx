@@ -5,6 +5,7 @@ import AdminEstimateRequests from './AdminEstimateRequests'
 import AdminProjectsManager from './AdminProjectsManager'
 import AdminServicesManager from './AdminServicesManager'
 import AdminReviewsManager from './AdminReviewsManager'
+import { adminFetch } from '../lib/adminApi'
 
 export default function Admin() {
   const [adminKey, setAdminKey] = useState(localStorage.getItem('adminKey') || '')
@@ -26,9 +27,9 @@ export default function Admin() {
   const loadStats = async () => {
     try {
       const [msgs, reviews, projects] = await Promise.all([
-        fetch(`http://localhost:4000/admin/api/messages?key=${adminKey}`).then(r => r.json()),
-        fetch(`http://localhost:4000/admin/api/reviews?key=${adminKey}`).then(r => r.json()),
-        fetch(`http://localhost:4000/admin/api/projects?key=${adminKey}`).then(r => r.json())
+        adminFetch('/api/admin/messages', adminKey).then(r => r.json()),
+        adminFetch('/api/admin/reviews', adminKey).then(r => r.json()),
+        adminFetch('/api/admin/projects', adminKey).then(r => r.json())
       ])
       setStats({
         totalMessages: msgs.length,

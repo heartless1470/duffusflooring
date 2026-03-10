@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { adminFetch } from '../lib/adminApi'
 
 export default function AdminDashboard({ adminKey, stats, refreshStats }) {
   const [messages, setMessages] = useState([])
@@ -13,8 +14,8 @@ export default function AdminDashboard({ adminKey, stats, refreshStats }) {
     setLoading(true)
     try {
       const [msgs, proj] = await Promise.all([
-        fetch(`http://localhost:4000/admin/api/messages?key=${adminKey}`).then(r => r.json()),
-        fetch(`http://localhost:4000/admin/api/projects?key=${adminKey}`).then(r => r.json())
+        adminFetch('/api/admin/messages', adminKey).then(r => r.json()),
+        adminFetch('/api/admin/projects', adminKey).then(r => r.json())
       ])
       setMessages(msgs.reverse().slice(0, 5))
       setProjects(proj.reverse().slice(0, 5))

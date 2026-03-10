@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-import { readFileAsDataUrl, saveLocalReview } from '../lib/reviews'
-
-const REVIEW_ENDPOINT = import.meta.env.VITE_REVIEW_ENDPOINT || 'https://formsubmit.co/ajax/howardduffus@gmail.com'
+import { readFileAsDataUrl } from '../lib/reviews'
 
 export default function LeaveReview() {
   const [name, setName] = useState('')
@@ -32,35 +30,28 @@ export default function LeaveReview() {
     if (!name || !text) return alert('Please provide name and review text.')
     setSubmitting(true)
     try {
-      const form = new FormData()
-      form.append('name', name)
-      form.append('rating', String(rating))
-      form.append('text', text)
-      form.append('_subject', 'Duffus Flooring New Review')
-      if (image) form.append('attachment', image)
-
-      const res = await fetch(REVIEW_ENDPOINT, {
+      const imageDataUrl = image ? await readFileAsDataUrl(image) : null
+      const res = await fetch('/api/reviews', {
         method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: form
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          rating,
+          text,
+          image: imageDataUrl
+        })
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'Unknown' }))
         throw new Error(err.error || 'Failed')
       }
-      const imageDataUrl = image ? await readFileAsDataUrl(image) : null
-      saveLocalReview({ name, rating, text, image: imageDataUrl })
       alert('Thanks — your review was submitted.')
       window.location.hash = 'home'
     } catch (err) {
-      try {
-        const imageDataUrl = image ? await readFileAsDataUrl(image) : null
-        saveLocalReview({ name, rating, text, image: imageDataUrl })
-        alert('Your review was saved on this device and will still appear on the site.')
-        window.location.hash = 'home'
-      } catch {
-        alert('Could not submit review — ' + (err.message || 'check connection and try again'))
-      }
+      alert('Could not submit review — ' + (err.message || 'check connection and try again'))
     } finally {
       setSubmitting(false)
     }

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { adminFetch } from '../lib/adminApi'
+import { readFileAsDataUrl, resolveAssetUrl } from '../lib/reviews'
 
 export default function AdminServicesManager({ adminKey, onUpdate }) {
   const [services, setServices] = useState([])
@@ -19,7 +21,7 @@ export default function AdminServicesManager({ adminKey, onUpdate }) {
   const loadServices = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/services?key=${adminKey}`)
+      const res = await adminFetch('/api/admin/services', adminKey)
       const data = await res.json()
       setServices(data.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)))
     } catch (e) {
@@ -47,18 +49,21 @@ export default function AdminServicesManager({ adminKey, onUpdate }) {
 
     setSubmitting(true)
     try {
-      const formPayload = new FormData()
-      formPayload.append('name', formData.name)
-      formPayload.append('description', formData.description)
-      if (image) formPayload.append('image', image)
-
-      const url = editing
-        ? `http://localhost:4000/admin/api/services/${editing.id}?key=${adminKey}`
-        : `http://localhost:4000/admin/api/services?key=${adminKey}`
+      const imageDataUrl = image ? await readFileAsDataUrl(image) : undefined
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        image: imageDataUrl !== undefined ? imageDataUrl : editing?.image
+      }
 
       const method = editing ? 'PUT' : 'POST'
+      const path = editing ? `/api/admin/services/${editing.id}` : '/api/admin/services'
 
-      const res = await fetch(url, { method, body: formPayload })
+      const res = await adminFetch(path, adminKey, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
       if (res.ok) {
         setFormData({ name: '', description: '' })
         setImage(null)
@@ -88,7 +93,7 @@ export default function AdminServicesManager({ adminKey, onUpdate }) {
     if (!confirm('Delete this service? This cannot be undone.')) return
 
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/services/${id}?key=${adminKey}`, {
+      const res = await adminFetch(`/api/admin/services/${id}`, adminKey, {
         method: 'DELETE'
       })
       if (res.ok) {
@@ -395,7 +400,7 @@ export default function AdminServicesManager({ adminKey, onUpdate }) {
             <div key={service.id} className="service-card">
               {service.image && (
                 <div className="service-image">
-                  <img src={service.image} alt={service.name} />
+                  <img src={resolveAssetUrl(service.image)} alt={service.name} />
                 </div>
               )}
               <h3>{service.name}</h3>

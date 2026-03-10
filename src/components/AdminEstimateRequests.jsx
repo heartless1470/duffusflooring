@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { adminFetch } from '../lib/adminApi'
 
 export default function AdminEstimateRequests({ adminKey, onUpdate }) {
   const [messages, setMessages] = useState([])
@@ -13,7 +14,7 @@ export default function AdminEstimateRequests({ adminKey, onUpdate }) {
   const loadMessages = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/messages?key=${adminKey}`)
+      const res = await adminFetch('/api/admin/messages', adminKey)
       const data = await res.json()
       setMessages(data.reverse())
     } catch (e) {
@@ -25,7 +26,7 @@ export default function AdminEstimateRequests({ adminKey, onUpdate }) {
 
   const handleStatusChange = async (id, status) => {
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/messages/${id}/status?key=${adminKey}`, {
+      const res = await adminFetch(`/api/admin/messages/${id}/status`, adminKey, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
@@ -43,7 +44,7 @@ export default function AdminEstimateRequests({ adminKey, onUpdate }) {
   const handleDelete = async (id) => {
     if (!confirm('Delete this message?')) return
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/messages/${id}?key=${adminKey}`, {
+      const res = await adminFetch(`/api/admin/messages/${id}`, adminKey, {
         method: 'DELETE'
       })
       if (res.ok) {

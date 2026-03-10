@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { adminFetch, filesToDataUrls } from '../lib/adminApi'
+import { readFileAsDataUrl, resolveAssetUrl } from '../lib/reviews'
 
 export default function AdminProjectsManager({ adminKey, onUpdate }) {
   const [projects, setProjects] = useState([])
@@ -23,7 +25,7 @@ export default function AdminProjectsManager({ adminKey, onUpdate }) {
   const loadProjects = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/projects?key=${adminKey}`)
+      const res = await adminFetch('/api/admin/projects', adminKey)
       const data = await res.json()
       setProjects(data.reverse())
     } catch (e) {
@@ -56,27 +58,28 @@ export default function AdminProjectsManager({ adminKey, onUpdate }) {
 
     setSubmitting(true)
     try {
-      const formPayload = new FormData()
-      formPayload.append('title', formData.title)
-      formPayload.append('location', formData.location)
-      formPayload.append('type', formData.type)
-      formPayload.append('description', formData.description)
-      
-      // Send all gallery images
-      images.forEach((img, idx) => {
-        formPayload.append(`images`, img)
-      })
-      
-      // Send cover image if provided
-      if (coverImage) formPayload.append('coverImage', coverImage)
+      const uploadedImages = await filesToDataUrls(images)
+      const uploadedCover = coverImage ? await readFileAsDataUrl(coverImage) : null
 
-      const url = editing
-        ? `http://localhost:4000/admin/api/projects/${editing.id}?key=${adminKey}`
-        : `http://localhost:4000/admin/api/projects?key=${adminKey}`
+      const payload = {
+        title: formData.title,
+        location: formData.location,
+        type: formData.type,
+        description: formData.description,
+        images: uploadedImages.length > 0 ? uploadedImages : (editing?.images || []),
+        coverImage: useCoverImage
+          ? (uploadedCover || editing?.coverImage || null)
+          : (editing?.coverImage || uploadedImages[0] || null)
+      }
 
       const method = editing ? 'PUT' : 'POST'
+      const path = editing ? `/api/admin/projects/${editing.id}` : '/api/admin/projects'
 
-      const res = await fetch(url, { method, body: formPayload })
+      const res = await adminFetch(path, adminKey, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
       if (res.ok) {
         setFormData({ title: '', location: '', type: '', description: '' })
         setImages([])
@@ -113,7 +116,7 @@ export default function AdminProjectsManager({ adminKey, onUpdate }) {
     if (!confirm('Delete this project? This cannot be undone.')) return
 
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/projects/${id}?key=${adminKey}`, {
+      const res = await adminFetch(`/api/admin/projects/${id}`, adminKey, {
         method: 'DELETE'
       })
       if (res.ok) {
@@ -530,17 +533,17 @@ export default function AdminProjectsManager({ adminKey, onUpdate }) {
               <div className="project-image">
                 {project.coverImage ? (
                   <img 
-                    src={project.coverImage.startsWith('/uploads') ? `http://localhost:4000${project.coverImage}` : project.coverImage} 
+                    src={resolveAssetUrl(project.coverImage)} 
                     alt={project.title} 
                   />
                 ) : project.image && (project.image.startsWith('/uploads') || project.image.startsWith('/')) ? (
                   <img 
-                    src={project.image.startsWith('/uploads') || project.image.startsWith('/') ? `http://localhost:4000${project.image}` : project.image} 
+                    src={resolveAssetUrl(project.image)} 
                     alt={project.title} 
                   />
                 ) : project.images && project.images.length > 0 ? (
                   <img 
-                    src={project.images[0].startsWith('/uploads') ? `http://localhost:4000${project.images[0]}` : project.images[0]} 
+                    src={resolveAssetUrl(project.images[0])} 
                     alt={project.title} 
                   />
                 ) : (

@@ -963,18 +963,19 @@ footer {
         transform: translateX(100%);
         transition: transform 0.28s ease;
         z-index: 999;
-        padding: 92px 22px 28px;
+        padding: 82px 16px 18px;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
     }
 
     .mobile-menu a {
-        padding: 13px 14px;
+        padding: 10px 12px;
         border-radius: 10px;
         background: rgba(255, 255, 255, 0.04);
         color: rgba(255, 255, 255, 0.95);
         font-weight: 600;
+        font-size: 0.95rem;
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 

@@ -1,13 +1,4 @@
 const STATIC_REVIEWS_URL = '/data/reviews.json'
-const REVIEW_STORAGE_KEY = 'duffus-flooring-local-reviews-v1'
-
-function safeJsonParse(value, fallback) {
-  try {
-    return JSON.parse(value)
-  } catch {
-    return fallback
-  }
-}
 
 export function resolveAssetUrl(path) {
   if (!path) return null
@@ -44,32 +35,6 @@ export async function loadStaticReviews() {
   }
 }
 
-export function loadLocalReviews() {
-  if (typeof window === 'undefined') return []
-  const raw = window.localStorage.getItem(REVIEW_STORAGE_KEY)
-  const data = safeJsonParse(raw, [])
-  if (!Array.isArray(data)) return []
-  return data.map((item) => normalizeReview(item, 'local')).filter(Boolean)
-}
-
-export function saveLocalReview(reviewInput) {
-  if (typeof window === 'undefined') return null
-  const existing = loadLocalReviews()
-  const review = normalizeReview(
-    {
-      ...reviewInput,
-      id: `local-${Date.now()}`,
-      createdAt: new Date().toISOString()
-    },
-    'local'
-  )
-  if (!review) return null
-
-  const next = [review, ...existing].slice(0, 50)
-  window.localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(next))
-  return review
-}
-
 export async function readFileAsDataUrl(file) {
   if (!file) return null
   return new Promise((resolve, reject) => {
@@ -81,12 +46,20 @@ export async function readFileAsDataUrl(file) {
 }
 
 export async function getAllReviews() {
-  const [staticReviews, localReviews] = await Promise.all([
-    loadStaticReviews(),
-    Promise.resolve(loadLocalReviews())
-  ])
+  try {
+    const response = await fetch('/api/reviews', { cache: 'no-store' })
+    if (response.ok) {
+      const data = await response.json()
+      if (Array.isArray(data)) {
+        return data.map((item) => normalizeReview(item, 'remote')).filter(Boolean)
+      }
+    }
+  } catch {
+    // Fall back to static bundled reviews when API is unavailable.
+  }
 
-  return [...localReviews, ...staticReviews].sort((a, b) => {
+  const staticReviews = await loadStaticReviews()
+  return [...staticReviews].sort((a, b) => {
     const left = new Date(a.createdAt || 0).getTime()
     const right = new Date(b.createdAt || 0).getTime()
     return right - left

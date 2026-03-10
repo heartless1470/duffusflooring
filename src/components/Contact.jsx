@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || 'https://formsubmit.co/ajax/howardduffus@gmail.com'
-
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +24,7 @@ export default function Contact() {
 
     setSubmitting(true)
     try {
-      const res = await fetch(CONTACT_ENDPOINT, {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,8 +35,7 @@ export default function Contact() {
           email: formData.email,
           phone: formData.phone,
           service: formData.service,
-          message: formData.message,
-          _subject: 'Duffus Flooring Contact Request'
+          message: formData.message
         })
       })
 

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { adminFetch } from '../lib/adminApi'
+import { resolveAssetUrl } from '../lib/reviews'
 
 export default function AdminReviewsManager({ adminKey, onUpdate }) {
   const [reviews, setReviews] = useState([])
@@ -11,7 +13,7 @@ export default function AdminReviewsManager({ adminKey, onUpdate }) {
   const loadReviews = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/reviews?key=${adminKey}`)
+      const res = await adminFetch('/api/admin/reviews', adminKey)
       const data = await res.json()
       setReviews(data.reverse())
     } catch (e) {
@@ -25,7 +27,7 @@ export default function AdminReviewsManager({ adminKey, onUpdate }) {
     if (!confirm('Delete this review? This cannot be undone.')) return
 
     try {
-      const res = await fetch(`http://localhost:4000/admin/api/reviews/${id}?key=${adminKey}`, {
+      const res = await adminFetch(`/api/admin/reviews/${id}`, adminKey, {
         method: 'DELETE'
       })
       if (res.ok) {
@@ -210,7 +212,7 @@ export default function AdminReviewsManager({ adminKey, onUpdate }) {
 
               {review.image ? (
                 <img 
-                  src={`http://localhost:4000/${review.image}`} 
+                  src={resolveAssetUrl(review.image)} 
                   alt={`Review by ${review.name}`}
                   className="review-image"
                   onError={(e) => { e.target.style.display = 'none' }}
