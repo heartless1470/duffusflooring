@@ -1,6 +1,6 @@
-import { getCollection, readJsonBody, setCollection, uid } from './_lib/store.js'
+import { createHandler, getCollection, readJsonBody, setCollection, uid } from './_lib/store.js'
 
-export default async function handler(req, res) {
+export default createHandler(async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const body = await readJsonBody(req)
@@ -23,4 +23,4 @@ export default async function handler(req, res) {
 
   await setCollection('messages', messages)
   return res.status(200).json({ ok: true })
-}
+})

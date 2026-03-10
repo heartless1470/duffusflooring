@@ -1,6 +1,6 @@
-import { getCollection, requireAdmin, setCollection } from '../../_lib/store.js'
+import { createHandler, getCollection, requireAdmin, setCollection } from '../../_lib/store.js'
 
-export default async function handler(req, res) {
+export default createHandler(async function handler(req, res) {
   if (!requireAdmin(req, res)) return
   if (req.method !== 'DELETE') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -11,4 +11,4 @@ export default async function handler(req, res) {
 
   await setCollection('reviews', reviews.filter((r) => r.id !== id))
   return res.status(200).json({ ok: true })
-}
+})

@@ -1,7 +1,7 @@
-import { getCollection } from './_lib/store.js'
+import { createHandler, getCollection } from './_lib/store.js'
 
-export default async function handler(req, res) {
+export default createHandler(async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
   const projects = await getCollection('projects')
   return res.status(200).json(projects)
-}
+})

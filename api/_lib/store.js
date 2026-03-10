@@ -129,7 +129,8 @@ export async function getCollection(name) {
     return Array.isArray(data) ? data : []
   } catch {
     const initial = seedData[name] || []
-    await writeBlobJson(path, initial)
+    // Do not let a failed seed-write crash the caller (e.g. BLOB_READ_WRITE_TOKEN not yet set).
+    try { await writeBlobJson(path, initial) } catch { /* no-op */ }
     return initial
   }
 }
@@ -151,6 +152,23 @@ export function requireAdmin(req, res) {
     return false
   }
   return true
+}
+
+/**
+ * Wraps a Vercel API handler so any unhandled exception returns a JSON 500
+ * instead of crashing with FUNCTION_INVOCATION_FAILED.
+ */
+export function createHandler(fn) {
+  return async function handler(req, res) {
+    try {
+      await fn(req, res)
+    } catch (err) {
+      console.error('[API error]', req.method, req.url, err?.message ?? err)
+      if (!res.headersSent) {
+        res.status(500).json({ error: err?.message || 'Internal server error' })
+      }
+    }
+  }
 }
 
 export async function readJsonBody(req) {

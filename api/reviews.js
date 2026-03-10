@@ -1,6 +1,6 @@
-import { getCollection, readJsonBody, setCollection, uid } from './_lib/store.js'
+import { createHandler, getCollection, readJsonBody, setCollection, uid } from './_lib/store.js'
 
-export default async function handler(req, res) {
+export default createHandler(async function handler(req, res) {
   if (req.method === 'GET') {
     const reviews = await getCollection('reviews')
     const ordered = [...reviews].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
@@ -27,4 +27,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ error: 'Method not allowed' })
-}
+})
