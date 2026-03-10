@@ -1,0 +1,210 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Services page styles: hero, grid, cards, CTAs */
+.services-hero {
+  padding: 3.25rem 0;
+  background: linear-gradient(180deg, rgba(100,108,255,0.06), rgba(0,0,0,0));
+  margin-bottom: 1rem;
+  text-align: center;
+  border-radius: 10px;
+}
+.services-hero h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+.services-hero .hero-sub { max-width: 70ch; margin: 0.5rem auto 1.25rem; color: rgba(255,255,255,0.95); line-height:1.5; }
+
+
+.services-section .section-title { margin-bottom: 1rem; }
+.services-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+.service-card {
+  background: rgba(255,255,255,0.03);
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  text-align: left;
+}
+.service-card h3 { margin-top: 0; font-size: 1.05rem; }
+.service-card .tight { margin: 0.25rem 0 0.8rem; }
+.service-card ul { margin: 0.5rem 0 0 1.1rem; }
+.card-icon { width: 44px; height: 44px; display:inline-flex; align-items:center; justify-content:center; margin-bottom: 0.75rem; color: #646cff; }
+
+/* remove empty footer spacing since buttons removed */
+.card-footer { display: none; }
+
+.why-section .why-list { list-style: disc; margin-left: 1.2rem; max-width: 60ch; }
+.process-section .process-list { list-style: none; padding: 0; margin-left: 0; max-width: 60ch; }
+.process-list li { margin-bottom: 0.6rem; }
+
+/* Why & Process side-by-side grid */
+.why-process-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr; /* make columns equal height when side-by-side */
+  align-items: start;
+}
+.why-process-grid .why-list,
+.why-process-grid .process-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+.why-process-grid .why-column,
+.why-process-grid .process-column {
+  background: rgba(255,255,255,0.02);
+  padding: 0; /* inner card handles padding */
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+.why-process-grid .why-column .section-title,
+.why-process-grid .process-column .section-title { margin-top: 0; margin-bottom: 0.6rem; font-size: 1.25rem; }
+
+@media (min-width: 800px) {
+  .why-process-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* info-card styles (Why / Process) */
+.info-card {
+  /* make columns feel like table cells without visible lines */
+  background: transparent;
+  padding: 0.5rem 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  min-height: auto;
+}
+.info-card h2.section-title { font-size: 1.1rem; margin: 0 0 0.6rem; }
+.info-card .why-list, .info-card .process-list { margin: 0; padding-left: 0; }
+.info-card li { margin-bottom: 0.5rem; }
+
+@media (prefers-color-scheme: light) {
+  .info-card { background: #fff; color: #213547; border-color: rgba(0,0,0,0.06); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+}
+
+/* Mini cards used inside Why / Process columns */
+.mini-cards {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+.mini-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  color: rgba(255,255,255,0.95);
+  padding: 0.8rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.45);
+}
+
+.mini-icon { display:inline-flex; width:20px; height:20px; align-items:center; justify-content:center; color:#9dd67a; flex:0 0 20px; }
+.mini-text { display:inline-block; }
+
+.mini-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+
+@media (min-width: 600px) {
+  .mini-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1000px) {
+  .mini-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-color-scheme: light) {
+  .mini-card { background: #fff; color: #213547; border-color: rgba(0,0,0,0.06); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+}
+
+.cta-section { text-align: center; padding: 2rem 0; background: linear-gradient(180deg, rgba(100,108,255,0.03), transparent); border-radius: 8px; }
+.large-cta { padding: 0.9rem 1.2rem; font-size: 1rem; }
+
+/* Buttons */
+.btn { display:inline-block; text-decoration:none; border-radius:8px; padding:0.5rem 0.75rem; }
+.btn-primary { background:#646cff; color:#fff; }
+.btn-primary:hover { background:#535bf2; }
+
+@media (min-width: 800px) {
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .services-hero h1 { font-size: 2.4rem; }
+}
+
+/* Prevent fixed header from overlapping page headings */
+main { padding-top: 88px; }
+
+/* Section title tweaks for Services page to avoid huge global sizes */
+.services-section .section-title,
+.why-section .section-title,
+.process-section .section-title,
+.cta-section .section-title {
+  display: block;
+  font-size: 1.6rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.9rem;
+  text-align: left;
+}
+
+@media (max-width: 800px) {
+  main { padding-top: 72px; }
+  .services-section .section-title,
+  .why-section .section-title,
+  .process-section .section-title,
+  .cta-section .section-title { text-align: center; }
+}
+
+/* tighten overall spacing */
+.section-padding { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+
+@media (prefers-color-scheme: light) {
+  .services-hero .hero-sub, .service-card { color: #213547; }
+  .service-card { background: #fff; border-color: rgba(0,0,0,0.06); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+  .card-icon { color: #3b3f7a; }
+}
