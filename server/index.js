@@ -262,6 +262,21 @@ app.delete('/admin/api/messages/:id', (req, res) => {
   res.json({ ok: true })
 })
 
+// Update message status — matches what the React admin panel sends (POST /api/admin/messages/:id)
+app.post('/admin/api/messages/:id', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Forbidden' })
+  const { status } = req.body || {}
+  if (!['New', 'Contacted', 'Completed'].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' })
+  }
+  const msgs = readMessages()
+  const idx = msgs.findIndex(m => m.id === req.params.id)
+  if (idx < 0) return res.status(404).json({ error: 'Not found' })
+  msgs[idx] = { ...msgs[idx], status, read: status !== 'New' }
+  writeMessages(msgs)
+  res.json({ ok: true })
+})
+
 // Projects API
 app.get('/admin/api/projects', (req, res) => {
   if (!isAdmin(req)) return res.status(403).json({ error: 'Forbidden' })

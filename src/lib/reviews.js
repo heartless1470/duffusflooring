@@ -1,3 +1,5 @@
+import { resolveApiPath } from './api'
+
 export function resolveAssetUrl(path) {
   if (!path) return null
   if (/^https?:\/\//i.test(path) || path.startsWith('data:')) return path
@@ -33,7 +35,7 @@ export async function readFileAsDataUrl(file) {
 
 export async function getAllReviews() {
   try {
-    const response = await fetch('/api/reviews', { cache: 'no-store' })
+    const response = await fetch(resolveApiPath('/api/reviews'), { cache: 'no-store' })
     if (response.ok) {
       const data = await response.json()
       if (Array.isArray(data)) {

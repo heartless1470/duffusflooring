@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { isLocalHost, parseApiError, resolveApiPath } from '../lib/api'
 
 export default function AdminLogin({ onLogin }) {
-  const [password, setPassword] = useState('')
+  const [password, setPassword] = useState(() => (isLocalHost() ? 'emberveil' : ''))
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -11,11 +12,11 @@ export default function AdminLogin({ onLogin }) {
     setLoading(true)
 
     try {
-      const res = await fetch(`/api/admin/messages?key=${encodeURIComponent(password)}`)
+      const res = await fetch(resolveApiPath(`/api/admin/messages?key=${encodeURIComponent(password)}`))
       if (res.ok) {
         onLogin(password)
       } else {
-        setError('Invalid admin key')
+        setError(await parseApiError(res, 'Invalid admin key'))
       }
     } catch (e) {
       setError('Failed to connect to server')
@@ -159,7 +160,7 @@ export default function AdminLogin({ onLogin }) {
             {loading ? 'Logging in...' : 'Login'}
           </button>
 
-          <p className="login-hint">Contact administrator for access credentials</p>
+          <p className="login-hint">{isLocalHost() ? 'Default local admin key: emberveil' : 'Contact administrator for access credentials'}</p>
         </form>
       </div>
     </div>

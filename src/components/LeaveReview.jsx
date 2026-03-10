@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getErrorMessage, parseApiError, resolveApiPath } from '../lib/api'
 import { readFileAsDataUrl } from '../lib/reviews'
 
 export default function LeaveReview() {
@@ -31,7 +32,7 @@ export default function LeaveReview() {
     setSubmitting(true)
     try {
       const imageDataUrl = image ? await readFileAsDataUrl(image) : null
-      const res = await fetch('/api/reviews', {
+      const res = await fetch(resolveApiPath('/api/reviews'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,13 +46,12 @@ export default function LeaveReview() {
         })
       })
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Unknown' }))
-        throw new Error(err.error || 'Failed')
+        throw new Error(await parseApiError(res, 'Could not submit review'))
       }
       alert('Thanks — your review was submitted.')
       window.location.hash = 'home'
     } catch (err) {
-      alert('Could not submit review — ' + (err.message || 'check connection and try again'))
+      alert('Could not submit review — ' + getErrorMessage(err, 'check connection and try again'))
     } finally {
       setSubmitting(false)
     }

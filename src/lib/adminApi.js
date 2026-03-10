@@ -1,4 +1,5 @@
 import { readFileAsDataUrl } from './reviews'
+import { resolveApiPath } from './api'
 
 export function withAdminKey(path, adminKey) {
   const separator = path.includes('?') ? '&' : '?'
@@ -6,7 +7,7 @@ export function withAdminKey(path, adminKey) {
 }
 
 export async function adminFetch(path, adminKey, options = {}) {
-  return fetch(withAdminKey(path, adminKey), options)
+  return fetch(resolveApiPath(withAdminKey(path, adminKey)), options)
 }
 
 export async function filesToDataUrls(files = []) {

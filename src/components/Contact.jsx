@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getErrorMessage, parseApiError, resolveApiPath } from '../lib/api'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ export default function Contact() {
 
     setSubmitting(true)
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(resolveApiPath('/api/contact'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,11 +45,11 @@ export default function Contact() {
         setFormData({ name: '', email: '', phone: '', service: '', message: '' })
         setTimeout(() => setSubmitted(false), 8000)
       } else {
-        alert('Failed to send message. Please try again.')
+        alert(await parseApiError(res, 'Failed to send message. Please try again.'))
       }
-    } catch (e) {
-      console.error('Failed to send message:', e)
-      alert('Failed to send message. Please try again.')
+    } catch (error) {
+      console.error('Failed to send message:', error)
+      alert(getErrorMessage(error, 'Failed to send message. Please try again.'))
     } finally {
       setSubmitting(false)
     }
