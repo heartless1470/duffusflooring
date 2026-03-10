@@ -1,5 +1,3 @@
-const STATIC_REVIEWS_URL = '/data/reviews.json'
-
 export function resolveAssetUrl(path) {
   if (!path) return null
   if (/^https?:\/\//i.test(path) || path.startsWith('data:')) return path
@@ -23,18 +21,6 @@ function normalizeReview(item, source = 'remote') {
   }
 }
 
-export async function loadStaticReviews() {
-  try {
-    const response = await fetch(STATIC_REVIEWS_URL, { cache: 'no-store' })
-    if (!response.ok) return []
-    const data = await response.json()
-    if (!Array.isArray(data)) return []
-    return data.map((item) => normalizeReview(item, 'static')).filter(Boolean)
-  } catch {
-    return []
-  }
-}
-
 export async function readFileAsDataUrl(file) {
   if (!file) return null
   return new Promise((resolve, reject) => {
@@ -55,13 +41,8 @@ export async function getAllReviews() {
       }
     }
   } catch {
-    // Fall back to static bundled reviews when API is unavailable.
+    return []
   }
 
-  const staticReviews = await loadStaticReviews()
-  return [...staticReviews].sort((a, b) => {
-    const left = new Date(a.createdAt || 0).getTime()
-    const right = new Date(b.createdAt || 0).getTime()
-    return right - left
-  })
+  return []
 }

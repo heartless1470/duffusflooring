@@ -8,7 +8,7 @@ import AdminReviewsManager from './AdminReviewsManager'
 import { adminFetch } from '../lib/adminApi'
 
 export default function Admin() {
-  const [adminKey, setAdminKey] = useState(localStorage.getItem('adminKey') || '')
+  const [adminKey, setAdminKey] = useState('')
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [stats, setStats] = useState({
     totalMessages: 0,
@@ -19,7 +19,6 @@ export default function Admin() {
 
   useEffect(() => {
     if (adminKey) {
-      localStorage.setItem('adminKey', adminKey)
       loadStats()
     }
   }, [adminKey])
@@ -44,7 +43,6 @@ export default function Admin() {
 
   const handleLogout = () => {
     setAdminKey('')
-    localStorage.removeItem('adminKey')
     setCurrentPage('dashboard')
   }
 
