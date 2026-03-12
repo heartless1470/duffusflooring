@@ -21,7 +21,7 @@ export default function Footer() {
             <h3>Contact Info</h3>
             <div className="contact-details">
               <p><i className="fas fa-phone"></i> <span>+1 (876) 314-1008 / +1 (876) 384-4916</span></p>
-              <p><i className="fas fa-envelope"></i> <span>duffusflooring@gmail.com</span></p>
+              <p><i className="fas fa-envelope"></i> <span><a href="mailto:duffusflooring@gmail.com" style={{ color: '#fff', textDecoration: 'none' }}>duffusflooring@gmail.com</a></span></p>
               {/*
               <p><i className="fas fa-map-marker-alt"></i> Your City, State</p>
               */}

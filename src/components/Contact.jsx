@@ -266,7 +266,11 @@ export default function Contact() {
         <div className="contact-info-card">
           <div className="icon">📧</div>
           <h3>Email</h3>
-          <span>duffusflooring@gmail.com</span>
+          <span>
+            <a href="mailto:duffusflooring@gmail.com" style={{ color: '#fff', textDecoration: 'none' }}>
+              duffusflooring@gmail.com
+            </a>
+          </span>
         </div>
         <div className="contact-info-card">
           <div className="icon">📞</div>
