@@ -266,12 +266,12 @@ export default function Contact() {
         <div className="contact-info-card">
           <div className="icon">📧</div>
           <h3>Email</h3>
-          <span>howardduffus@gmail.com</span>
+          <span>duffusflooring@gmail.com</span>
         </div>
         <div className="contact-info-card">
           <div className="icon">📞</div>
           <h3>Phone</h3>
-          <span>(876) 314-1008</span>
+          <span>(876) 314-1008 / 876 384 4916</span>
         </div>
       </div>
 

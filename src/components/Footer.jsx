@@ -20,8 +20,8 @@ export default function Footer() {
           <div className="footer-col" data-aos="fade-up" data-aos-delay="300">
             <h3>Contact Info</h3>
             <div className="contact-details">
-              <p><i className="fas fa-phone"></i> <span>+1 (876) 314-1008</span></p>
-              <p><i className="fas fa-envelope"></i> <span>howardduffus@gmail.com</span></p>
+              <p><i className="fas fa-phone"></i> <span>+1 (876) 314-1008 / 876 384 4916</span></p>
+              <p><i className="fas fa-envelope"></i> <span>duffusflooring@gmail.com</span></p>
               {/*
               <p><i className="fas fa-map-marker-alt"></i> Your City, State</p>
               */}
