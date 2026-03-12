@@ -271,7 +271,7 @@ export default function Contact() {
         <div className="contact-info-card">
           <div className="icon">📞</div>
           <h3>Phone</h3>
-          <span>(876) 314-1008 / 876 384 4916</span>
+          <span>+1 (876) 314-1008 / +1 (876) 384-4916</span>
         </div>
       </div>
 
