@@ -107,7 +107,7 @@ function pathFor(name) {
 }
 
 async function readBlobJson(path) {
-  const meta = await head(path)
+  const meta = await head(path, { token: process.env.BLOB_READ_WRITE_TOKEN })
   const response = await fetch(meta.url, { cache: 'no-store' })
   if (!response.ok) throw new Error('Failed to read blob JSON')
   return response.json()
@@ -118,7 +118,8 @@ async function writeBlobJson(path, data) {
     access: 'public',
     addRandomSuffix: false,
     allowOverwrite: true,
-    contentType: 'application/json'
+    contentType: 'application/json',
+    token: process.env.BLOB_READ_WRITE_TOKEN
   })
 }
 
